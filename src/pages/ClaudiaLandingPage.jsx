@@ -453,7 +453,7 @@ const ClaudiaLandingPage = () => {
         />
       </main>
 
-      {/* Footer */}
+      {/* Footer - Corrigido */}
       <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -471,19 +471,19 @@ const ClaudiaLandingPage = () => {
             <div>
               <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">Produto</h3>
               <ul className="mt-4 space-y-4">
-                <li><a href="#features" className="text-gray-400 hover:text-white transition-colors">Recursos</a></li>
-                <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors">Preços</a></li>
-                <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Casos de Uso</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Suporte</a></li>
+                <li><button onClick={() => scrollToSection('features')} className="text-gray-400 hover:text-white transition-colors">Recursos</button></li>
+                <li><button onClick={() => scrollToSection('pricing')} className="text-gray-400 hover:text-white transition-colors">Preços</button></li>
+                <li><button onClick={() => scrollToSection('use-cases')} className="text-gray-400 hover:text-white transition-colors">Casos de Uso</button></li>
+                <li><button onClick={() => scrollToSection('faq')} className="text-gray-400 hover:text-white transition-colors">Suporte</button></li>
               </ul>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">Empresa</h3>
               <ul className="mt-4 space-y-4">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Sobre Nós</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Carreiras</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contato</a></li>
+                <li><button onClick={() => scrollToSection('hero')} className="text-gray-400 hover:text-white transition-colors">Sobre Nós</button></li>
+                <li><button onClick={() => scrollToSection('testimonials')} className="text-gray-400 hover:text-white transition-colors">Depoimentos</button></li>
+                <li><button onClick={() => scrollToSection('how-it-works')} className="text-gray-400 hover:text-white transition-colors">Como Funciona</button></li>
+                <li><button onClick={() => scrollToSection('cta')} className="text-gray-400 hover:text-white transition-colors">Contato</button></li>
               </ul>
             </div>
           </div>
@@ -492,9 +492,9 @@ const ClaudiaLandingPage = () => {
               &copy; {new Date().getFullYear()} Claud.IA. Todos os direitos reservados.
             </div>
             <div className="mt-4 md:mt-0 flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Termos</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacidade</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Cookies</a>
+              <button onClick={() => scrollToSection('hero')} className="text-gray-400 hover:text-white transition-colors">Termos</button>
+              <button onClick={() => scrollToSection('hero')} className="text-gray-400 hover:text-white transition-colors">Privacidade</button>
+              <button onClick={() => scrollToSection('hero')} className="text-gray-400 hover:text-white transition-colors">Cookies</button>
             </div>
           </div>
         </div>
