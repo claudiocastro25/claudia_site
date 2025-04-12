@@ -159,37 +159,45 @@ const HowItWorks = ({ tabContent }) => {
                 />
               </motion.div>
 
-              {/* Floating element 1 */}
+              {/* Floating element 1 - Correção da propriedade transition duplicada */}
               <motion.div
                 className="absolute -top-5 -right-5 bg-white rounded-lg shadow-lg p-3"
                 initial={{ opacity: 0, y: -10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
                 animate={{ y: [0, -10, 0] }}
-                // Animação definida apenas uma vez
                 transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
+                  y: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  opacity: {
+                    duration: 0.5,
+                    delay: 0.2
+                  }
                 }}
               >
                 <Brain className="w-8 h-8 text-primary-500" />
               </motion.div>
 
-              {/* Floating element 2 */}
+              {/* Floating element 2 - Correção da propriedade transition duplicada */}
               <motion.div
                 className="absolute -bottom-5 -left-5 bg-white rounded-lg shadow-lg p-3"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
                 animate={{ y: [0, 10, 0] }}
-                // Animação definida apenas uma vez
                 transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut"
+                  y: {
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  opacity: {
+                    duration: 0.5,
+                    delay: 0.3
+                  }
                 }}
               >
                 <Shield className="w-8 h-8 text-tertiary-500" />

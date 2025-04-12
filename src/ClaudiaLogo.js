@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
 import { keyframes } from '@mui/system';
 
@@ -99,7 +99,7 @@ const ClaudIAEyeLogo = ({
   }, [withAnimation]);
 
   // NOVA FUNÇÃO: Iniciar olhar em direção aleatória
-  const startRandomLook = () => {
+  const startRandomLook = useCallback(() => {
     // Se estiver seguindo o mouse ou sendo hover, não olhe aleatoriamente
     if (followMouse || isHovered || forceLookAtCenter) return;
     
@@ -141,7 +141,7 @@ const ClaudIAEyeLogo = ({
         }
       }, lookDuration);
     }, nextLookDelay);
-  };
+  }, [followMouse, isHovered, forceLookAtCenter]); // Adicionando dependências
 
   // Iniciar o comportamento de olhar aleatoriamente quando o componente for montado
   useEffect(() => {
@@ -153,7 +153,7 @@ const ClaudIAEyeLogo = ({
       if (autoLookTimerRef.current) clearTimeout(autoLookTimerRef.current);
       if (lookDurationRef.current) clearTimeout(lookDurationRef.current);
     };
-  }, [withAnimation, isHovered, followMouse, forceLookAtCenter]);
+  }, [withAnimation, isHovered, followMouse, forceLookAtCenter, startRandomLook]); // Adicionei startRandomLook como dependência
 
   // Efeito para seguir o mouse ou mover-se aleatoriamente
   useEffect(() => {
