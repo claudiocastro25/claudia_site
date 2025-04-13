@@ -1,19 +1,663 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, MessageCircle, FileText, PieChart, Zap, CheckCircle, Brain, Shield } from 'lucide-react';
+import { useForm, ValidationError } from '@formspree/react';
 
 // Logo
 import ClaudIAEyeLogo from '../ClaudiaLogo';
 
+// Importação de imagens
+import headLogo from '../assets/images/head-logo.png';
+import claudiaVideo from '../assets/images/claudia.mp4';
+import claudiaDados from '../assets/images/claudia_dados.png';
+import claudiaPensando from '../assets/images/claudia_pensando.png';
+import claudiaVisual from '../assets/images/claudia_visual.png';
+
 // Importações corrigidas de componentes de seções
 import Hero from '../components/sections/Hero';
 import Features from '../components/sections/Features';
-import HowItWorks from '../components/sections/HowItWorks';
 import UseCases from '../components/sections/UseCases';
 import Testimonials from '../components/sections/Testimonials';
 import Pricing from '../components/sections/Pricing';
 import FAQ from '../components/sections/FAQ';
 import CTA from '../components/sections/CTA';
+
+// Componente de formulário de contato
+const ContactForm = () => {
+  const [state, handleSubmit] = useForm("xyzzdkdq");
+  
+  if (state.succeeded) {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+        <h3 className="text-lg font-medium text-green-800">Mensagem enviada com sucesso!</h3>
+        <p className="mt-2 text-green-600">Obrigado pelo seu contato. Retornaremos em breve.</p>
+      </div>
+    );
+  }
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Nome completo
+        </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          required
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          type="email"
+          name="email"
+          id="email"
+          required
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+        />
+        <ValidationError prefix="Email" field="email" errors={state.errors} />
+      </div>
+      
+      <div>
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+          Telefone
+        </label>
+        <input
+          type="tel"
+          name="phone"
+          id="phone"
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+          Empresa
+        </label>
+        <input
+          type="text"
+          name="company"
+          id="company"
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+          Mensagem
+        </label>
+        <textarea
+          id="message"
+          name="message"
+          rows={4}
+          required
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+        />
+        <ValidationError prefix="Message" field="message" errors={state.errors} />
+      </div>
+      
+      <div>
+        <button
+          type="submit"
+          disabled={state.submitting}
+          className="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+        >
+          {state.submitting ? 'Enviando...' : 'Enviar mensagem'}
+        </button>
+      </div>
+    </form>
+  );
+};
+
+// Componente de chat flutuante
+const FloatingChat = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { id: 1, sender: 'bot', text: 'Olá! Sou a Claud.IA, sua assistente virtual. Como posso ajudar você hoje?' }
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+  const messagesEndRef = useRef(null);
+
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (newMessage.trim() === '') return;
+    
+    // Adiciona a mensagem do usuário
+    const userMessage = { id: messages.length + 1, sender: 'user', text: newMessage };
+    setMessages([...messages, userMessage]);
+    setNewMessage('');
+    
+    // Simula resposta da IA após breve delay
+    setTimeout(() => {
+      const botMessage = { 
+        id: messages.length + 2, 
+        sender: 'bot', 
+        text: 'Obrigada por sua mensagem! Nosso time irá analisar e entrar em contato em breve. Enquanto isso, posso responder algumas perguntas sobre nossos serviços.'
+      };
+      setMessages(prev => [...prev, botMessage]);
+    }, 1000);
+  };
+
+  // Scroll para a última mensagem quando uma nova mensagem é adicionada
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  return (
+    <>
+      {/* Botão de chat flutuante */}
+      <button
+        onClick={toggleChat}
+        className="fixed bottom-20 right-6 z-40 p-3 rounded-full bg-primary-600 text-white shadow-lg hover:bg-primary-700 transition-colors flex items-center justify-center"
+        aria-label="Chat com Claud.IA"
+      >
+        {isOpen ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <div className="relative">
+            <img src={headLogo} alt="Claudia" className="w-14 h-14" />
+            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">1</span>
+          </div>
+        )}
+      </button>
+
+      {/* Janela de chat */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-32 right-6 z-40 w-80 sm:w-96 bg-white rounded-lg shadow-xl overflow-hidden max-h-[500px] flex flex-col"
+          >
+            {/* Cabeçalho do chat */}
+            <div className="bg-primary-600 p-4 text-white flex items-center">
+              <div className="mr-3">
+                <img src={headLogo} alt="Claudia" className="w-10 h-10" />
+              </div>
+              <div>
+                <h3 className="font-medium">Chat com Claud.IA</h3>
+                <p className="text-xs text-primary-100">Assistente virtual</p>
+              </div>
+              <button 
+                onClick={toggleChat}
+                className="ml-auto text-white hover:text-primary-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            {/* Mensagens do chat */}
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+              <div className="space-y-4">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-xs sm:max-w-sm px-4 py-2 rounded-lg ${
+                        msg.sender === 'user'
+                          ? 'bg-primary-600 text-white rounded-br-none'
+                          : 'bg-white border border-gray-200 text-gray-700 rounded-bl-none'
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+            
+            {/* Formulário para envio de mensagem */}
+            <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 flex">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Digite sua mensagem..."
+                className="flex-1 border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              />
+              <button
+                type="submit"
+                className="bg-primary-600 text-white px-4 rounded-r-md hover:bg-primary-700 transition-colors"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </button>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+// Componente para a seção "IA Que Respeita Seus Dados" com vídeo
+const AIRespectSection = () => {
+  const videoRef = useRef(null);
+  
+  useEffect(() => {
+    if (videoRef.current) {
+      // Função para reiniciar o vídeo com pausa
+      const handleVideoEnded = () => {
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.play();
+          }
+        }, 10000); // Pausa de 10 segundos antes de reiniciar
+      };
+      
+      videoRef.current.addEventListener('ended', handleVideoEnded);
+      
+      // Limpar event listener quando o componente for desmontado
+      return () => {
+        if (videoRef.current) {
+          videoRef.current.removeEventListener('ended', handleVideoEnded);
+        }
+      };
+    }
+  }, []);
+  
+  return (
+    <section id="ai-respect" className="py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Uma IA que Respeita Seus Dados
+          </h2>
+          <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+            Descubra como a Claud.IA transforma a maneira como você analisa e utiliza seus dados empresariais
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch h-full">
+          {/* Vídeo à esquerda */}
+          <motion.div 
+            className="relative rounded-lg overflow-hidden w-full max-w-lg mx-auto lg:mx-0 h-full group"
+            whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
+          >
+            <video 
+              ref={videoRef}
+              autoPlay 
+              muted
+              className="w-full h-full object-cover"
+              src={claudiaVideo}
+            />
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-tertiary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+          </motion.div>
+          
+          {/* Containers à direita */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 h-full">
+            <motion.div 
+              className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col group overflow-hidden"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-tertiary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-primary-50 p-3 rounded-lg text-primary-600 mr-4 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg">Privacidade Total</h3>
+                  <p className="text-gray-600 mt-2">Seus dados permanecem isolados e seguros, sem exposição a modelos públicos de IA.</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col group overflow-hidden"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-tertiary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-primary-50 p-3 rounded-lg text-primary-600 mr-4 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg">Sem Alucinações</h3>
+                  <p className="text-gray-600 mt-2">Respostas baseadas exclusivamente nos seus dados, eliminando informações incorretas.</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col group overflow-hidden"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-tertiary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-primary-50 p-3 rounded-lg text-primary-600 mr-4 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg">Análise Documental</h3>
+                  <p className="text-gray-600 mt-2">Processa diversos formatos como PDFs, Word, Excel, emails e imagens com texto.</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col group overflow-hidden"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-tertiary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-primary-50 p-3 rounded-lg text-primary-600 mr-4 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg">Busca Inteligente</h3>
+                  <p className="text-gray-600 mt-2">Encontre informações em segundos, mesmo em milhares de documentos complexos.</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col group overflow-hidden"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-tertiary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-primary-50 p-3 rounded-lg text-primary-600 mr-4 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg">Insights Automáticos</h3>
+                  <p className="text-gray-600 mt-2">Descubra tendências, padrões e informações críticas sem precisar procurar.</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="relative bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col group overflow-hidden"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-tertiary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-primary-50 p-3 rounded-lg text-primary-600 mr-4 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 22V12c0-5.5 4.5-10 10-10s10 4.5 10 10v10"/><path d="M18 22V5.5a2.5 2.5 0 0 0-5 0V22"/><path d="M6 22V2"/></svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg">Integração Perfeita</h3>
+                  <p className="text-gray-600 mt-2">Conecte-se facilmente com seus sistemas e fluxos de trabalho existentes.</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Componente para a seção "Como Funciona"
+const HowItWorksSection = () => {
+  const [activeTab, setActiveTab] = useState('documents');
+  
+  const tabContent = {
+    documents: {
+      title: 'Análise de Documentos',
+      description: 'Extraia insights valiosos de qualquer tipo de documento com nossa tecnologia de processamento avançado. Claud.IA identifica entidades, relacionamentos e informações críticas automaticamente.',
+      features: [
+        'Processamento de múltiplos formatos (PDF, Word, Excel, etc)',
+        'Extração de entidades e informações-chave',
+        'Resumo automático de documentos extensos',
+        'Busca inteligente em todo seu acervo documental'
+      ],
+      image: claudiaDados
+    },
+    visualizations: {
+      title: 'Visualizações Interativas',
+      description: 'Transforme dados brutos em visualizações interativas e intuitivas que revelam tendências e insights imediatamente. Nossa plataforma cria automaticamente os gráficos e dashboards mais relevantes.',
+      features: [
+        'Dashboards personalizáveis e interativos',
+        'Gráficos gerados automaticamente com base nos seus dados',
+        'Visualização de tendências e anomalias',
+        'Compartilhamento seguro de insights visuais'
+      ],
+      image: claudiaVisual
+    },
+    insights: {
+      title: 'Insights Acionáveis',
+      description: 'Claud.IA vai além da análise básica, fornecendo insights acionáveis que realmente impactam seu negócio. Receba recomendações proativas baseadas em seus dados.',
+      features: [
+        'Detecção automática de padrões e tendências',
+        'Alertas proativos sobre anomalias e oportunidades',
+        'Recomendações contextualizadas e relevantes',
+        'Priorização inteligente de informações críticas'
+      ],
+      image: claudiaPensando
+    }
+  };
+
+  return (
+    <section id="how-it-works" className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Tecnologia Avançada, Interface Intuitiva
+          </h2>
+          <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+            Experimente a potência da Claud.IA através de uma interface simples e fácil de usar
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+          {/* Coluna das abas - ocupa 2/3 do espaço */}
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden">
+            <div className="border-b border-gray-200">
+              <nav className="flex -mb-px">
+                <button
+                  onClick={() => setActiveTab('documents')}
+                  className={`flex items-center py-4 px-6 font-medium text-sm ${
+                    activeTab === 'documents'
+                      ? 'border-b-2 border-primary-500 text-primary-600'
+                      : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Documentos
+                </button>
+                <button
+                  onClick={() => setActiveTab('visualizations')}
+                  className={`flex items-center py-4 px-6 font-medium text-sm ${
+                    activeTab === 'visualizations'
+                      ? 'border-b-2 border-primary-500 text-primary-600'
+                      : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <PieChart className="w-5 h-5 mr-2" />
+                  Visualizações
+                </button>
+                <button
+                  onClick={() => setActiveTab('insights')}
+                  className={`flex items-center py-4 px-6 font-medium text-sm ${
+                    activeTab === 'insights'
+                      ? 'border-b-2 border-primary-500 text-primary-600'
+                      : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Insights
+                </button>
+              </nav>
+            </div>
+            
+            <div className="p-6">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    {tabContent[activeTab].title}
+                  </h3>
+                  <p className="text-gray-600 mb-5">
+                    {tabContent[activeTab].description}
+                  </p>
+                  <ul className="space-y-3">
+                    {tabContent[activeTab].features.map((feature, i) => (
+                      <li key={i} className="flex items-start">
+                        <CheckCircle className="w-5 h-5 text-primary-500 mt-0.5 mr-2 flex-shrink-0" />
+                        <span className="text-gray-600">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+          
+          {/* Coluna da imagem - ocupa 1/3 do espaço */}
+          <div className="lg:col-span-1 bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden h-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="p-8 flex items-center justify-center h-full"
+                style={{ minHeight: '25rem' }} 
+              >
+                {activeTab === 'documents' && (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img src={claudiaDados} alt="Documentos" className="w-80 h-80 object-contain" />
+                  </div>
+                )}
+                
+                {activeTab === 'visualizations' && (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img src={claudiaVisual} alt="Visualizações" className="w-80 h-80 object-contain" />
+                  </div>
+                )}
+                
+                {activeTab === 'insights' && (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img src={claudiaPensando} alt="Insights" className="w-80 h-80 object-contain" />
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Seção de contato com formulário
+const ContactSection = () => {
+  return (
+    <section id="contact" className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Entre em Contato
+          </h2>
+          <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+            Estamos prontos para ajudar sua empresa a extrair o máximo valor dos seus dados
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div>
+            <div className="bg-gray-50 rounded-xl p-8 shadow-md">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Fale Conosco</h3>
+              <ContactForm />
+            </div>
+          </div>
+          
+          <div className="space-y-8">
+            <div className="bg-primary-50 rounded-xl p-8 border border-primary-100">
+              <h3 className="text-xl font-bold text-primary-800 mb-4">Informações de Contato</h3>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <div className="bg-primary-100 p-2 rounded-lg text-primary-600 mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">Telefone</h4>
+                    <p className="text-primary-700 mt-1">(11) 4002-8922</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <div className="bg-primary-100 p-2 rounded-lg text-primary-600 mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">Email</h4>
+                    <p className="text-primary-700 mt-1">contato@claudia.ai</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-gray-900 text-white rounded-xl p-8 relative overflow-hidden">
+              <div className="absolute inset-0 opacity-20">
+                <img src={claudiaDados} alt="Claudia" className="w-full h-full object-cover" />
+              </div>
+              <div className="relative z-10">
+                <h3 className="text-xl font-bold text-white mb-4">Entre para nossa lista VIP</h3>
+                <p className="text-gray-300 mb-4">Receba novidades, atualizações e conteúdos exclusivos sobre a Claud.IA</p>
+                <form className="flex">
+                  <input 
+                    type="email" 
+                    placeholder="Seu email"
+                    className="flex-1 px-4 py-2 rounded-l-md text-gray-900 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  />
+                  <button 
+                    type="submit"
+                    className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-r-md transition-colors"
+                  >
+                    Inscrever
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const ClaudiaLandingPage = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -53,41 +697,6 @@ const ClaudiaLandingPage = () => {
         description: 'Conecte-se facilmente com seus sistemas e fluxos de trabalho existentes.'
       }
     ],
-    tabContent: {
-      documents: {
-        title: 'Análise de Documentos',
-        description: 'Extraia insights valiosos de qualquer tipo de documento com nossa tecnologia de processamento avançado. Claud.IA identifica entidades, relacionamentos e informações críticas automaticamente.',
-        features: [
-          'Processamento de múltiplos formatos (PDF, Word, Excel, etc)',
-          'Extração de entidades e informações-chave',
-          'Resumo automático de documentos extensos',
-          'Busca inteligente em todo seu acervo documental'
-        ],
-        image: '/api/placeholder/600/400'
-      },
-      visualizations: {
-        title: 'Visualizações Interativas',
-        description: 'Transforme dados brutos em visualizações interativas e intuitivas que revelam tendências e insights imediatamente. Nossa plataforma cria automaticamente os gráficos e dashboards mais relevantes.',
-        features: [
-          'Dashboards personalizáveis e interativos',
-          'Gráficos gerados automaticamente com base nos seus dados',
-          'Visualização de tendências e anomalias',
-          'Compartilhamento seguro de insights visuais'
-        ],
-        image: '/api/placeholder/600/400'
-      },
-      insights: {
-        title: 'Insights Acionáveis',
-        description: 'Claud.IA vai além da análise básica, fornecendo insights acionáveis que realmente impactam seu negócio. Receba recomendações proativas baseadas em seus dados.',
-        features: [
-          'Detecção automática de padrões e tendências',
-          'Alertas proativos sobre anomalias e oportunidades',
-          'Recomendações contextualizadas e relevantes',
-          'Priorização inteligente de informações críticas'
-        ],
-        image: '/api/placeholder/600/400'
-      }
-    },
     useCases: [
       {
         title: 'Análise de Documentos Jurídicos',
@@ -136,8 +745,8 @@ const ClaudiaLandingPage = () => {
     pricingPlans: {
       monthly: [
         {
-          name: 'Básico',
-          price: 'R$49,90',
+          name: 'Individual',
+          price: 'R$59,90',
           features: [
             '1 usuário',
             '10GB de armazenamento',
@@ -150,7 +759,7 @@ const ClaudiaLandingPage = () => {
         },
         {
           name: 'Profissional',
-          price: 'R$89,90',
+          price: 'R$249,90',
           features: [
             '5 usuários',
             '50GB de armazenamento',
@@ -181,8 +790,8 @@ const ClaudiaLandingPage = () => {
       ],
       annual: [
         {
-          name: 'Básico',
-          price: 'R$39,90',
+          name: 'Individual',
+          price: 'R$47,90',
           features: [
             '1 usuário',
             '10GB de armazenamento',
@@ -195,7 +804,7 @@ const ClaudiaLandingPage = () => {
         },
         {
           name: 'Profissional',
-          price: 'R$69,90',
+          price: 'R$199,90',
           features: [
             '5 usuários',
             '50GB de armazenamento',
@@ -270,6 +879,137 @@ const ClaudiaLandingPage = () => {
     setIsVideoModalOpen(true);
   };
 
+  // Custom Hero Component com vídeo centralizado
+  const CustomHero = () => {
+    return (
+      <section className="pt-32 pb-24 relative overflow-hidden" id="hero">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary-50 to-tertiary-50"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <motion.h1 
+              className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-gray-900 tracking-tight"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Sua Assistente de IA <span className="text-gradient bg-gradient-to-r from-primary-600 to-tertiary-500">Privada e Segura</span>
+            </motion.h1>
+            
+            <motion.p 
+              className="mt-6 text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              Análises completas, visualizações interativas e insights valiosos sem compartilhar seus dados com modelos públicos de IA.
+            </motion.p>
+            
+            <motion.div 
+              className="mt-10 flex flex-wrap justify-center gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <a 
+                href="#pricing" 
+                className="inline-flex justify-center items-center px-8 py-4 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 transition-colors"
+              >
+                Comece Agora
+                <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </a>
+              
+              <button 
+                onClick={handleOpenVideoModal}
+                className="inline-flex justify-center items-center px-8 py-4 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 h-5 w-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                </svg>
+                Ver Demonstração
+              </button>
+            </motion.div>
+          </div>
+          
+          {/* Vídeo centralizado com botão de play personalizado */}
+          <motion.div 
+            className="w-full max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl relative"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+          >
+            <div className="relative pb-[56.25%] h-0">
+              <iframe 
+                src="https://player.vimeo.com/video/1071610754?h=6a0ddd0234&title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479&controls=0" 
+                width="100%" 
+                height="100%" 
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                frameBorder="0" 
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                title="Claud.IA Demo"
+                id="vimeo-player"
+              ></iframe>
+            </div>
+            
+            {/* Overlay com gradiente sutil e botão de play personalizado */}
+            <div 
+              className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer group"
+              onClick={() => {
+                // Usar a API do Vimeo para reproduzir o vídeo quando o botão for clicado
+                const iframe = document.getElementById('vimeo-player');
+                if (iframe) {
+                  iframe.contentWindow.postMessage(
+                    JSON.stringify({
+                      method: 'play'
+                    }),
+                    '*'
+                  );
+                  
+                  // Ocultar o overlay após o clique
+                  const overlay = iframe.parentElement.nextElementSibling;
+                  if (overlay) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                      overlay.style.display = 'none';
+                    }, 500); // Transição de 500ms
+                  }
+                }
+              }}
+            >
+              <div className="bg-white/30 backdrop-blur-sm rounded-full p-6 text-white transition-all duration-300 group-hover:bg-white/40 group-hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </motion.div>
+          
+          {/* Trusted by companies */}
+          <motion.div 
+            className="mt-20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <p className="text-sm font-semibold text-gray-500 text-center mb-6">UTILIZADA POR EMPRESAS COMO</p>
+            <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-5">
+              {[1, 2, 3, 4, 5].map((index) => (
+                <div 
+                  key={index}
+                  className="col-span-1 flex justify-center items-center grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all"
+                >
+                  <img className="h-9" src={`/api/placeholder/120/36`} alt={`Empresa ${index}`} />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header Navigation */}
@@ -284,7 +1024,7 @@ const ClaudiaLandingPage = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8">
               <button 
-                onClick={() => scrollToSection('features')}
+                onClick={() => scrollToSection('ai-respect')}
                 className="text-gray-600 hover:text-primary-600 transition-colors px-3 py-2 rounded-md text-sm font-medium"
               >
                 Recursos
@@ -306,6 +1046,12 @@ const ClaudiaLandingPage = () => {
                 className="text-gray-600 hover:text-primary-600 transition-colors px-3 py-2 rounded-md text-sm font-medium"
               >
                 Preços
+              </button>
+              <button 
+                onClick={() => scrollToSection('contact')}
+                className="text-gray-600 hover:text-primary-600 transition-colors px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Contato
               </button>
             </nav>
 
@@ -368,7 +1114,7 @@ const ClaudiaLandingPage = () => {
               <div className="pt-2 pb-4 flex-1 overflow-y-auto">
                 <div className="px-2 space-y-1 mt-3">
                   <button
-                    onClick={() => scrollToSection('features')}
+                    onClick={() => scrollToSection('ai-respect')}
                     className="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600 rounded-md"
                   >
                     Recursos
@@ -390,6 +1136,12 @@ const ClaudiaLandingPage = () => {
                     className="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600 rounded-md"
                   >
                     Preços
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('contact')}
+                    className="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600 rounded-md"
+                  >
+                    Contato
                   </button>
                 </div>
               </div>
@@ -418,17 +1170,13 @@ const ClaudiaLandingPage = () => {
       {/* Main content */}
       <main>
         {/* Hero Section */}
-        <Hero 
-          onWatchVideo={handleOpenVideoModal}
-          backgroundImage="/api/placeholder/1600/800"
-          videoThumbnail="/api/placeholder/1200/675"
-        />
+        <CustomHero />
 
-        {/* Features Section */}
-        <Features features={claudiaData.features} />
+        {/* Features Section - Substituído pela nova seção */}
+        <AIRespectSection />
 
         {/* How It Works Section */}
-        <HowItWorks tabContent={claudiaData.tabContent} />
+        <HowItWorksSection />
 
         {/* Use Cases Section */}
         <UseCases useCases={claudiaData.useCases} />
@@ -438,6 +1186,9 @@ const ClaudiaLandingPage = () => {
 
         {/* Pricing Section */}
         <Pricing pricingPlans={claudiaData.pricingPlans} />
+
+        {/* Contact Section */}
+        <ContactSection />
 
         {/* FAQ Section */}
         <FAQ faqs={claudiaData.faqs} />
@@ -453,7 +1204,7 @@ const ClaudiaLandingPage = () => {
         />
       </main>
 
-      {/* Footer - Corrigido */}
+      {/* Footer */}
       <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -471,7 +1222,7 @@ const ClaudiaLandingPage = () => {
             <div>
               <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">Produto</h3>
               <ul className="mt-4 space-y-4">
-                <li><button onClick={() => scrollToSection('features')} className="text-gray-400 hover:text-white transition-colors">Recursos</button></li>
+                <li><button onClick={() => scrollToSection('ai-respect')} className="text-gray-400 hover:text-white transition-colors">Recursos</button></li>
                 <li><button onClick={() => scrollToSection('pricing')} className="text-gray-400 hover:text-white transition-colors">Preços</button></li>
                 <li><button onClick={() => scrollToSection('use-cases')} className="text-gray-400 hover:text-white transition-colors">Casos de Uso</button></li>
                 <li><button onClick={() => scrollToSection('faq')} className="text-gray-400 hover:text-white transition-colors">Suporte</button></li>
@@ -483,7 +1234,7 @@ const ClaudiaLandingPage = () => {
                 <li><button onClick={() => scrollToSection('hero')} className="text-gray-400 hover:text-white transition-colors">Sobre Nós</button></li>
                 <li><button onClick={() => scrollToSection('testimonials')} className="text-gray-400 hover:text-white transition-colors">Depoimentos</button></li>
                 <li><button onClick={() => scrollToSection('how-it-works')} className="text-gray-400 hover:text-white transition-colors">Como Funciona</button></li>
-                <li><button onClick={() => scrollToSection('cta')} className="text-gray-400 hover:text-white transition-colors">Contato</button></li>
+                <li><button onClick={() => scrollToSection('contact')} className="text-gray-400 hover:text-white transition-colors">Contato</button></li>
               </ul>
             </div>
           </div>
@@ -500,7 +1251,7 @@ const ClaudiaLandingPage = () => {
         </div>
       </footer>
 
-      {/* Video Modal - Com efeito de movimento no hover */}
+      {/* Video Modal com correção para que apareça */}
       <AnimatePresence>
         {isVideoModalOpen && (
           <motion.div 
@@ -529,13 +1280,13 @@ const ClaudiaLandingPage = () => {
                 <X className="w-5 h-5" />
               </button>
               <div className="relative pt-[56.25%]">
-                <iframe 
+                <video
                   className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+                  src={claudiaVideo}
+                  controls
+                  autoPlay
                   title="Claud.IA Demo Video"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                ></iframe>
+                ></video>
               </div>
             </motion.div>
           </motion.div>
@@ -551,6 +1302,9 @@ const ClaudiaLandingPage = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
       </button>
+
+      {/* Chat flutuante */}
+      <FloatingChat />
     </div>
   );
 };
