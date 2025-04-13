@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, MessageCircle, FileText, PieChart, Zap, CheckCircle, Brain, Shield } from 'lucide-react';
+import { X, MessageCircle, FileText, PieChart, Zap, CheckCircle } from 'lucide-react';
 import { useForm, ValidationError } from '@formspree/react';
 
 // Logo
@@ -14,8 +14,6 @@ import claudiaPensando from '../assets/images/claudia_pensando.png';
 import claudiaVisual from '../assets/images/claudia_visual.png';
 
 // Importações corrigidas de componentes de seções
-import Hero from '../components/sections/Hero';
-import Features from '../components/sections/Features';
 import UseCases from '../components/sections/UseCases';
 import Testimonials from '../components/sections/Testimonials';
 import Pricing from '../components/sections/Pricing';
@@ -250,27 +248,25 @@ const FloatingChat = () => {
 // Componente para a seção "IA Que Respeita Seus Dados" com vídeo
 const AIRespectSection = () => {
   const videoRef = useRef(null);
-  
+
   useEffect(() => {
-    if (videoRef.current) {
-      // Função para reiniciar o vídeo com pausa
-      const handleVideoEnded = () => {
-        setTimeout(() => {
-          if (videoRef.current) {
-            videoRef.current.play();
-          }
-        }, 10000); // Pausa de 10 segundos antes de reiniciar
-      };
-      
-      videoRef.current.addEventListener('ended', handleVideoEnded);
-      
-      // Limpar event listener quando o componente for desmontado
-      return () => {
-        if (videoRef.current) {
-          videoRef.current.removeEventListener('ended', handleVideoEnded);
-        }
-      };
-    }
+    const videoElement = videoRef.current;
+
+    if (!videoElement) return;
+
+    // Função para reiniciar o vídeo com pausa
+    const handleVideoEnded = () => {
+      setTimeout(() => {
+        videoElement.play();
+      }, 10000); // Pausa de 10 segundos antes de reiniciar
+    };
+
+    videoElement.addEventListener('ended', handleVideoEnded);
+
+    // Limpar event listener quando o componente for desmontado
+    return () => {
+      videoElement.removeEventListener('ended', handleVideoEnded);
+    };
   }, []);
   
   return (
