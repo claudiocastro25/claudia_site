@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Círculo branco de fundo -->
+  <circle cx="16" cy="16" r="16" fill="white" />
+  
+  <!-- Olho (forma oval) -->
+  <defs>
+    <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B52F3" />
+      <stop offset="100%" stop-color="#7C64F9" />
+    </linearGradient>
+  </defs>
+  
+  <ellipse cx="16" cy="16" rx="10" ry="6" fill="url(#eyeGradient)" />
+  
+  <!-- Pupila (círculo branco) -->
+  <circle cx="16" cy="16" r="2.75" fill="white" />
+  
+  <!-- Brilho principal do olho -->
+  <circle cx="19.5" cy="14" r="1.5" fill="white" fill-opacity="0.8" />
+  
+  <!-- Brilho secundário do olho -->
+  <circle cx="13" cy="15.5" r="0.9" fill="white" fill-opacity="0.5" />
+</svg>
