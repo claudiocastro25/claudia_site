@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/claudia_site/static/css/main.984c7768.css",
+    "main.js": "/claudia_site/static/js/main.1595da9c.js",
+    "static/js/453.45ec465a.chunk.js": "/claudia_site/static/js/453.45ec465a.chunk.js",
+    "index.html": "/claudia_site/index.html",
+    "main.984c7768.css.map": "/claudia_site/static/css/main.984c7768.css.map",
+    "main.1595da9c.js.map": "/claudia_site/static/js/main.1595da9c.js.map",
+    "453.45ec465a.chunk.js.map": "/claudia_site/static/js/453.45ec465a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.984c7768.css",
+    "static/js/main.1595da9c.js"
+  ]
+}
